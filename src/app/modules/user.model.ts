@@ -58,11 +58,11 @@ const userSchema = new Schema<User>({
     type: String,
     unique: true,
   },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-    maxlength: [20, 'Password cannot be more than 20 characters'],
-  },
+  //   password: {
+  //     type: String,
+  //     required: [true, 'Password is required'],
+  //     maxlength: [20, 'Password cannot be more than 20 characters'],
+  //   },
   fullName: {
     type: userFullNameSchema,
     required: [true, 'User full name is required'],
@@ -98,4 +98,4 @@ const userSchema = new Schema<User>({
   ],
 });
 
-const User = model<User>('User', userSchema);
+export const UserModel = model<User>('User', userSchema);
