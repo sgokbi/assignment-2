@@ -1,6 +1,5 @@
-import { Schema, model, connect } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import {
-  User,
   User,
   UserAddress,
   UserFullName,

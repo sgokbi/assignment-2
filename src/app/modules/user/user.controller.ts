@@ -13,10 +13,9 @@ const createUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err: any) {
-    // console.log(err);
     res.status(500).json({
       success: false,
-      message: err.message || "Something went wrong! User couldn't create!",
+      message: "Something went wrong! User couldn't create!",
       error: {
         code: err.code,
         description: "Something went wrong! User couldn't create!",
@@ -35,13 +34,36 @@ const getAllUsers = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err: any) {
-    // console.log(err);
     res.status(500).json({
       success: false,
-      message: err.message || "Something went wrong! User couldn't retrieved!",
+      message: 'Users not found',
       error: {
         code: err.code,
-        description: "Something went wrong! User couldn't retrieved!",
+        description: 'Users not found',
+      },
+    });
+  }
+};
+
+const getSingleUser = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.userId;
+    const userId = Number(id);
+
+    const result = await UserServices.getSingleUserFromDB(userId);
+
+    res.status(200).json({
+      success: true,
+      message: 'User fetched successfully!',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: err.code,
+        description: 'User not found',
       },
     });
   }
@@ -50,4 +72,5 @@ const getAllUsers = async (req: Request, res: Response) => {
 export const UserControllers = {
   createUser,
   getAllUsers,
+  getSingleUser,
 };
