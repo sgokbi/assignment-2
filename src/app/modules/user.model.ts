@@ -126,21 +126,11 @@ userSchema.pre('save', async function (next) {
 });
 
 // pre save middleware / hook
-// userSchema.post('findOne', function (doc, next) {
-//   // doc.password = '';
-//   // next();
-//   if (doc) {
-//     doc.password = undefined;
-//   }
-//   next();
-// });
-
-userSchema.set('toJSON', {
-  transform: function (doc, ret) {
-    delete ret.password;
-    return ret;
-  },
-});
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  return user;
+};
 
 // custom instance method
 userSchema.methods.isUserExists = async function (userId: number) {
