@@ -14,7 +14,7 @@ const createUserIntoDB = async (userData: TUser) => {
 };
 
 const getAllUsersFromDB = async () => {
-  // const result = await UserModel.find();
+  // const result = await User.find();
   const result = await User.aggregate([
     {
       $project: {
@@ -34,7 +34,7 @@ const getAllUsersFromDB = async () => {
 };
 
 const getSingleUserFromDB = async (userId: number) => {
-  // const result = await UserModel.findOne({ userId });
+  // const result = await User.findOne({ userId });
 
   const result = await User.aggregate([
     { $match: { userId } },
@@ -50,8 +50,15 @@ const getSingleUserFromDB = async (userId: number) => {
   return result;
 };
 
+const deleteSingleUserFromDB = async (userId: number) => {
+  const result = await User.updateOne({ userId }, { isDeleted: true });
+
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
+  deleteSingleUserFromDB,
 };

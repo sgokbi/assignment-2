@@ -28,6 +28,7 @@ export type TUser = {
   hobbies: string[];
   address: TUserAddress;
   orders: TUserOrder[];
+  isDeleted: boolean;
 };
 
 export type UserMethods = {

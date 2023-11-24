@@ -9,6 +9,7 @@ import {
 } from './user/user.interface';
 import bcrypt from 'bcrypt';
 import config from '../config';
+import { boolean } from 'zod';
 
 const userFullNameSchema = new Schema<TUserFullName>({
   firstName: {
@@ -112,6 +113,10 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
       type: userOrderSchema,
     },
   ],
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // pre save middleware / hook
@@ -125,12 +130,28 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// pre save middleware / hook
+// hiding password when returning response
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   return user;
 };
+
+// delete user using query middleware
+userSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
 
 // custom instance method
 userSchema.methods.isUserExists = async function (userId: number) {
