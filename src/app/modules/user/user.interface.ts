@@ -20,7 +20,7 @@ export type TUserOrder = {
 export type TUser = {
   userId: number;
   username: string;
-  // password: string;
+  password: string;
   fullName: TUserFullName;
   age: number;
   email: string;

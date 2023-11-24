@@ -38,6 +38,10 @@ const UserOrderValidationSchema = z.object({
 export const UserValidationSchema = z.object({
   userId: z.number().min(1, { message: 'User Id is required' }),
   username: z.string().min(1, { message: 'User Name is required' }).max(50),
+  password: z
+    .string()
+    .min(6, { message: 'Password required more than 6 characters' })
+    .max(80, { message: 'Password cannot be more than 80 characters' }),
   fullName: UserFullNameValidationSchema,
   age: z.number().min(1, { message: 'User age is required' }),
   email: z.string().email({ message: 'User valid email is required' }),

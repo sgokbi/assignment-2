@@ -7,6 +7,8 @@ import {
   UserModel,
   TUserOrder,
 } from './user/user.interface';
+import bcrypt from 'bcrypt';
+import config from '../config';
 
 const userFullNameSchema = new Schema<TUserFullName>({
   firstName: {
@@ -69,11 +71,12 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
     unique: true,
     trim: true,
   },
-  //   password: {
-  //     type: String,
-  //     required: [true, 'Password is required'],
-  //     maxlength: [20, 'Password cannot be more than 20 characters'],
-  //   },
+  password: {
+    type: String,
+    select: false,
+    required: [true, 'Password is required'],
+    maxlength: [80, 'Password cannot be more than 20 characters'],
+  },
   fullName: {
     type: userFullNameSchema,
     required: [true, 'User full name is required'],
@@ -111,6 +114,35 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
   ],
 });
 
+// pre save middleware / hook
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+
+// pre save middleware / hook
+// userSchema.post('findOne', function (doc, next) {
+//   // doc.password = '';
+//   // next();
+//   if (doc) {
+//     doc.password = undefined;
+//   }
+//   next();
+// });
+
+userSchema.set('toJSON', {
+  transform: function (doc, ret) {
+    delete ret.password;
+    return ret;
+  },
+});
+
+// custom instance method
 userSchema.methods.isUserExists = async function (userId: number) {
   const existingUser = await User.findOne({ userId });
   return existingUser;
