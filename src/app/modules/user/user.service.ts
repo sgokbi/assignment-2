@@ -1,14 +1,21 @@
-import { UserModel } from '../user.model';
-import { User } from './user.interface';
+import { User } from '../user.model';
+import { TUser } from './user.interface';
 
-const createUserIntoDB = async (user: User) => {
-  const result = await UserModel.create(user);
+const createUserIntoDB = async (userData: TUser) => {
+  // const result = await UserModel.create(user);
+
+  const user = new User(userData); // instance created
+  if (await user.isUserExists(userData.userId)) {
+    throw new Error('User already exists');
+  }
+
+  const result = await user.save(); // using built in instance method
   return result;
 };
 
 const getAllUsersFromDB = async () => {
   // const result = await UserModel.find();
-  const result = await UserModel.aggregate([
+  const result = await User.aggregate([
     {
       $project: {
         _id: 0,
@@ -29,7 +36,7 @@ const getAllUsersFromDB = async () => {
 const getSingleUserFromDB = async (userId: number) => {
   // const result = await UserModel.findOne({ userId });
 
-  const result = await UserModel.aggregate([
+  const result = await User.aggregate([
     { $match: { userId } },
     {
       $project: {

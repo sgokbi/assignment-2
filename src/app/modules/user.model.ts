@@ -1,61 +1,73 @@
 import { Schema, model } from 'mongoose';
 import {
-  User,
-  UserAddress,
-  UserFullName,
-  UserOrder,
+  TUser,
+  TUserAddress,
+  TUserFullName,
+  UserMethods,
+  UserModel,
+  TUserOrder,
 } from './user/user.interface';
 
-const userFullNameSchema = new Schema<UserFullName>({
+const userFullNameSchema = new Schema<TUserFullName>({
   firstName: {
     type: String,
     required: [true, 'First name is required'],
+    trim: true,
   },
   lastName: {
     type: String,
     required: [true, 'Last name is required'],
+    trim: true,
   },
 });
 
-const userAddressSchema = new Schema<UserAddress>({
+const userAddressSchema = new Schema<TUserAddress>({
   street: {
     type: String,
     required: [true, 'Street name is required'],
+    trim: true,
   },
   city: {
     type: String,
     required: [true, 'City name is required'],
+    trim: true,
   },
   country: {
     type: String,
     required: [true, 'Country name is required'],
+    trim: true,
   },
 });
 
-const userOrderSchema = new Schema<UserOrder>({
+const userOrderSchema = new Schema<TUserOrder>({
   productName: {
     type: String,
     required: [true, 'Product name is required'],
+    trim: true,
   },
   price: {
     type: Number,
     required: [true, 'Price is required'],
+    trim: true,
   },
   quantity: {
     type: Number,
     required: [true, 'Quantity is required'],
+    trim: true,
   },
 });
 
-const userSchema = new Schema<User>({
+const userSchema = new Schema<TUser, UserModel, UserMethods>({
   userId: {
     type: Number,
     required: [true, 'User Id is required'],
     unique: true,
+    trim: true,
   },
   username: {
     type: String,
     unique: true,
+    trim: true,
   },
   //   password: {
   //     type: String,
@@ -69,11 +81,13 @@ const userSchema = new Schema<User>({
   age: {
     type: Number,
     required: [true, 'User age is required'],
+    trim: true,
   },
   email: {
     type: String,
     required: [true, 'User Email is required'],
-    // unique: true,
+    trim: true,
+    unique: true,
   },
   isActive: {
     type: Boolean,
@@ -97,4 +111,9 @@ const userSchema = new Schema<User>({
   ],
 });
 
-export const UserModel = model<User>('User', userSchema);
+userSchema.methods.isUserExists = async function (userId: number) {
+  const existingUser = await User.findOne({ userId });
+  return existingUser;
+};
+
+export const User = model<TUser, UserModel>('User', userSchema);

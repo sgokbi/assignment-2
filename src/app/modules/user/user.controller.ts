@@ -1,11 +1,24 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
+import { z } from 'zod';
+import UserValidationSchema from './user.validation';
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user: userData } = req.body;
+    // const userFullNameValidationSchema = z.object({
+    //   firstName: z
+    //     .string()
+    //     .min(1)
+    //     .max(30, { message: 'First name length should be under 30.' }),
+    // });
+    // const userValidationSchema = z.object({
+    //   userId: z.number(),
+    // });
 
-    const result = await UserServices.createUserIntoDB(userData);
+    const { user: userData } = req.body;
+    const zodParseData = UserValidationSchema.parse(userData);
+
+    const result = await UserServices.createUserIntoDB(zodParseData);
 
     res.status(200).json({
       success: true,
@@ -13,13 +26,15 @@ const createUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err: any) {
+    // console.log(err);
     res.status(500).json({
       success: false,
-      message: "Something went wrong! User couldn't create!",
-      error: {
-        code: err.code,
-        description: "Something went wrong! User couldn't create!",
-      },
+      message: err.message,
+      error: err,
+      // error: {
+      //   code: err.code,
+      //   description: err.message,
+      // },
     });
   }
 };
