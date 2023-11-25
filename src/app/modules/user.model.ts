@@ -75,7 +75,7 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
     type: String,
     select: false,
     required: [true, 'Password is required'],
-    maxlength: [80, 'Password cannot be more than 20 characters'],
+    maxlength: [80, 'Password cannot be more than 80 characters'],
   },
   fullName: {
     type: userFullNameSchema,
@@ -95,7 +95,6 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
   },
   isActive: {
     type: Boolean,
-    // required:[true, "isActive is required"],
     default: false,
   },
   hobbies: [

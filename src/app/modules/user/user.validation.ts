@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// validation using zod
 const UserFullNameValidationSchema = z.object({
   firstName: z
     .string()

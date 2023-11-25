@@ -1,6 +1,7 @@
 import { User } from '../user.model';
 import { TUser } from './user.interface';
 
+// To create a user
 const createUserIntoDB = async (userData: TUser) => {
   // new user by instance method
   const user = new User(userData);
@@ -14,6 +15,7 @@ const createUserIntoDB = async (userData: TUser) => {
   return result;
 };
 
+// To get all user form Database
 const getAllUsersFromDB = async () => {
   const result = await User.aggregate([
     {
@@ -33,6 +35,7 @@ const getAllUsersFromDB = async () => {
   return result;
 };
 
+// To get a single user from database by using userId
 const getSingleUserFromDB = async (userId: number) => {
   const result = await User.aggregate([
     { $match: { userId } },
@@ -50,6 +53,7 @@ const getSingleUserFromDB = async (userId: number) => {
   return result;
 };
 
+// To update a single user from database by using userId
 const updateUserIntoDB = async (userId: number, userData: TUser) => {
   const result = await User.findOneAndUpdate(
     { userId: userId },
@@ -59,6 +63,7 @@ const updateUserIntoDB = async (userId: number, userData: TUser) => {
   return result;
 };
 
+// To delete a single user from database by using userId
 const deleteSingleUserFromDB = async (userId: number) => {
   const result = await User.deleteOne({ userId });
   return result;
