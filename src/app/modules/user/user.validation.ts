@@ -51,7 +51,6 @@ export const UserValidationSchema = z.object({
   ),
   address: UserAddressValidationSchema,
   orders: z.array(UserOrderValidationSchema),
-  isDeleted: z.boolean(),
 });
 
 export default UserValidationSchema;

@@ -9,7 +9,6 @@ import {
 } from './user/user.interface';
 import bcrypt from 'bcrypt';
 import config from '../config';
-import { boolean } from 'zod';
 
 const userFullNameSchema = new Schema<TUserFullName>({
   firstName: {
@@ -81,6 +80,7 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
   fullName: {
     type: userFullNameSchema,
     required: [true, 'User full name is required'],
+    _id: false,
   },
   age: {
     type: Number,
@@ -107,16 +107,14 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
   address: {
     type: userAddressSchema,
     required: [true, 'User address is required'],
+    _id: false,
   },
   orders: [
     {
       type: userOrderSchema,
+      _id: false,
     },
   ],
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 // pre save middleware / hook
@@ -136,22 +134,6 @@ userSchema.methods.toJSON = function () {
   delete user.password;
   return user;
 };
-
-// delete user using query middleware
-userSchema.pre('find', function (next) {
-  this.find({ isDeleted: { $ne: true } });
-  next();
-});
-
-userSchema.pre('findOne', function (next) {
-  this.find({ isDeleted: { $ne: true } });
-  next();
-});
-
-userSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
 
 // custom instance method
 userSchema.methods.isUserExists = async function (userId: number) {

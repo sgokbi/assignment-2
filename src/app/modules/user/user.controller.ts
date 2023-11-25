@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
-import { z } from 'zod';
 import UserValidationSchema from './user.validation';
 
 const createUser = async (req: Request, res: Response) => {
@@ -35,9 +34,9 @@ const getAllUsers = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'Users not found',
+      message: err.message,
       error: {
-        code: err.code,
+        code: 404,
         description: 'Users not found',
       },
     });
@@ -58,11 +57,34 @@ const getSingleUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'User not found',
+      message: err.message,
+
       error: {
-        code: err.code,
+        code: 404,
         description: 'User not found',
       },
+    });
+  }
+};
+
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.userId;
+    const userId = Number(id);
+    const { user: userData } = req.body;
+    const zodParseData = UserValidationSchema.parse(userData);
+    const result = await UserServices.updateUserIntoDB(userId, zodParseData);
+
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully!',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+      error: err,
     });
   }
 };
@@ -81,9 +103,9 @@ const deleteSingleUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'User not found',
+      message: err.message,
       error: {
-        code: err.code,
+        code: 404,
         description: 'User not found',
       },
     });
@@ -95,4 +117,5 @@ export const UserControllers = {
   getAllUsers,
   getSingleUser,
   deleteSingleUser,
+  updateUser,
 };
