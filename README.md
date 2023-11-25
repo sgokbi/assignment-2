@@ -4,4 +4,4 @@
 
 [Link](https://github.com/sgokbi/assignment-2)
 To clone the repository, use the following command:
-`git clone `
+`git clone https://github.com/sgokbi/assignment-2.git`
