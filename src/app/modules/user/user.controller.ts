@@ -71,8 +71,8 @@ const updateUser = async (req: Request, res: Response) => {
   try {
     const id = req.params.userId;
     const userId = Number(id);
-    const { user: userData } = req.body;
-    const zodParseData = UserValidationSchema.parse(userData);
+    const { orders } = req.body;
+    const zodParseData = UserValidationSchema.parse(orders);
     const result = await UserServices.updateUserIntoDB(userId, zodParseData);
 
     res.status(200).json({

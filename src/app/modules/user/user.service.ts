@@ -34,14 +34,6 @@ const getAllUsersFromDB = async () => {
 };
 
 const getSingleUserFromDB = async (userId: number) => {
-  /*const user = new User({ userId });
-
-  if (!(await user.isUserExists(userId))) {
-    throw new Error('User not found');
-  }
-  await user.save();
-  */
-
   const result = await User.aggregate([
     { $match: { userId } },
     {
@@ -59,17 +51,6 @@ const getSingleUserFromDB = async (userId: number) => {
 };
 
 const updateUserIntoDB = async (userId: number, userData: TUser) => {
-  /*
-  console.log('update', userData);
-  const user = new User(userData); // instance created
-  console.log('...........', user, user.userId);
-  // Check if the user exists
-  const existingUser = await User.findOne({ userId: user.userId });
-  if (!existingUser) {
-    throw new Error('User not found');
-  }
-  await user.save(); // using built in instance method
-*/
   const result = await User.findOneAndUpdate(
     { userId: userId },
     { $set: userData },
