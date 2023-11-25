@@ -9,8 +9,7 @@ app.use(cors());
 app.use('/api/users', userRoutes);
 
 const getAController = (req: Request, res: Response) => {
-  //   const a = 10;
-  res.send('heloooooo');
+  res.send('heloooooo world');
 };
 
 app.get('/', getAController);
