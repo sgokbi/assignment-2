@@ -27,12 +27,15 @@ export type TUser = {
   isActive: boolean;
   hobbies: string[];
   address: TUserAddress;
-  orders: TUserOrder[];
+  orders?: TUserOrder[];
   // isDeleted: boolean;
 };
 
 export type UserMethods = {
   isUserExists(userId: number): Promise<TUser | null>;
+  getUserData(userId: number): Promise<TUser | null>;
+  deleteUser(userId: number): Promise<TUser | null>;
+  updateUser(userId: number, userData: TUser): Promise<TUser | null>;
 };
 
 export type UserModel = Model<TUser, Record<string, never>, UserMethods>;

@@ -1,72 +1,57 @@
-import { User } from '../user.model';
+import { User } from './user.model';
 import { TUser } from './user.interface';
 
-// To create a user
+// NEW USER CREATE
 const createUserIntoDB = async (userData: TUser) => {
-  // new user by instance method
+  // new user created by instance method
   const user = new User(userData);
 
+  // custom instance method to check if the user is exists
   if (await user.isUserExists(userData.userId)) {
     throw new Error('User already exists');
   }
 
-  // using built in instance method
+  // built in instance method
   const result = await user.save();
   return result;
 };
 
-// To get all user form Database
+// TO GET ALL USERS
 const getAllUsersFromDB = async () => {
-  const result = await User.aggregate([
-    {
-      $project: {
-        _id: 0,
-        userId: 1,
-        username: 1,
-        fullName: 1,
-        age: 1,
-        email: 1,
-        isActive: 1,
-        hobbies: 1,
-        address: 1,
-      },
-    },
-  ]);
+  const result = await User.find({}).exec();
+
+  if (result.length === 0) {
+    throw new Error('Users not found');
+  }
+
   return result;
 };
 
-// To get a single user from database by using userId
+// T0 GET SINGLE USER
 const getSingleUserFromDB = async (userId: number) => {
-  const result = await User.aggregate([
-    { $match: { userId } },
-    {
-      $project: {
-        _id: 0,
-        username: 1,
-        fullName: 1,
-        age: 1,
-        email: 1,
-        address: 1,
-      },
-    },
-  ]);
-  return result;
+  // new user created by instance method
+  const user = new User({ userId });
+
+  // custom instance method to get specific property by
+  const userData = await user.getUserData(userId);
+  return userData;
 };
 
 // To update a single user from database by using userId
 const updateUserIntoDB = async (userId: number, userData: TUser) => {
-  const result = await User.findOneAndUpdate(
-    { userId: userId },
-    { $set: userData },
-    { new: true, projection: { projection: 0 } },
-  );
-  return result;
+  const user = new User({ userId });
+  const updatedUser = await user.updateUser(userId, userData);
+  return updatedUser;
 };
 
-// To delete a single user from database by using userId
+// DELETE A SINGLE DATA FROM DATABASE
 const deleteSingleUserFromDB = async (userId: number) => {
-  const result = await User.deleteOne({ userId });
-  return result;
+  // new user created by instance method
+  const user = new User({ userId });
+
+  // custom instance method for delete a single user from database
+  const userData = await user.deleteUser(userId);
+  return userData;
 };
 
 export const UserServices = {

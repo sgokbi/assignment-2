@@ -5,7 +5,6 @@ const UserFullNameValidationSchema = z.object({
   firstName: z
     .string()
     .min(1, { message: 'First name is required' })
-    .max(50)
     .refine(
       (value) => value.charAt(0).toUpperCase() + value.slice(1) === value,
       {
@@ -15,7 +14,6 @@ const UserFullNameValidationSchema = z.object({
   lastName: z
     .string()
     .min(1, { message: 'Last name is required' })
-    .max(50)
     .refine(
       (value) => value.charAt(0).toUpperCase() + value.slice(1) === value,
       {
@@ -25,33 +23,28 @@ const UserFullNameValidationSchema = z.object({
 });
 
 const UserAddressValidationSchema = z.object({
-  street: z.string().min(1, { message: 'Street name is required' }).max(100),
-  city: z.string().min(1, { message: 'City name is required' }).max(50),
-  country: z.string().min(1, { message: 'Country name is required' }).max(50),
+  street: z.string().min(1, { message: 'Street name is required' }),
+  city: z.string().min(1, { message: 'City name is required' }),
+  country: z.string().min(1, { message: 'Country name is required' }),
 });
 
 const UserOrderValidationSchema = z.object({
-  productName: z.string().min(1).max(100),
+  productName: z.string().min(1),
   price: z.number(),
   quantity: z.number(),
 });
 
 export const UserValidationSchema = z.object({
   userId: z.number().min(1, { message: 'User Id is required' }),
-  username: z.string().min(1, { message: 'User Name is required' }).max(50),
-  password: z
-    .string()
-    .min(6, { message: 'Password required more than 6 characters' })
-    .max(80, { message: 'Password cannot be more than 80 characters' }),
+  username: z.string().min(1, { message: 'User Name is required' }),
+  password: z.string().min(1, { message: 'Password is required' }),
   fullName: UserFullNameValidationSchema,
   age: z.number().min(1, { message: 'User age is required' }),
   email: z.string().email({ message: 'User valid email is required' }),
   isActive: z.boolean(),
-  hobbies: z.array(
-    z.string().min(1, { message: 'User hobbies is required' }).max(50),
-  ),
+  hobbies: z.array(z.string().min(1, { message: 'User hobbies is required' })),
   address: UserAddressValidationSchema,
-  orders: z.array(UserOrderValidationSchema),
+  orders: z.array(UserOrderValidationSchema).optional(),
 });
 
 export default UserValidationSchema;

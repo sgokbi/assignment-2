@@ -6,9 +6,9 @@ import {
   UserMethods,
   UserModel,
   TUserOrder,
-} from './user/user.interface';
+} from './user.interface';
 import bcrypt from 'bcrypt';
-import config from '../config';
+import config from '../../config';
 
 const userFullNameSchema = new Schema<TUserFullName>({
   firstName: {
@@ -44,17 +44,14 @@ const userAddressSchema = new Schema<TUserAddress>({
 const userOrderSchema = new Schema<TUserOrder>({
   productName: {
     type: String,
-    required: [true, 'Product name is required'],
     trim: true,
   },
   price: {
     type: Number,
-    required: [true, 'Price is required'],
     trim: true,
   },
   quantity: {
     type: Number,
-    required: [true, 'Quantity is required'],
     trim: true,
   },
 });
@@ -68,6 +65,7 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
   },
   username: {
     type: String,
+    required: [true, 'User name is required'],
     unique: true,
     trim: true,
   },
@@ -75,7 +73,6 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
     type: String,
     select: false,
     required: [true, 'Password is required'],
-    maxlength: [80, 'Password cannot be more than 80 characters'],
   },
   fullName: {
     type: userFullNameSchema,
@@ -91,7 +88,6 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
     type: String,
     required: [true, 'User Email is required'],
     trim: true,
-    unique: true,
   },
   isActive: {
     type: Boolean,
@@ -116,7 +112,7 @@ const userSchema = new Schema<TUser, UserModel, UserMethods>({
   ],
 });
 
-// pre save middleware / hook
+// Pre save middleware / hook
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
@@ -127,17 +123,58 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// hiding password when returning response
+// Hiding password when returning response
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
   return user;
 };
 
-// custom instance method
+// Custom instance method to check if the user is exists
 userSchema.methods.isUserExists = async function (userId: number) {
   const existingUser = await User.findOne({ userId });
   return existingUser;
+};
+
+// Fetch filtered data if the user is exists by id by using instance method
+userSchema.methods.getUserData = async function (userId: number) {
+  const user = await User.findOne({ userId }).select('-orders').exec();
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return user;
+};
+
+// delete a user from database by userId by using custom instance method
+userSchema.methods.deleteUser = async function (userId: number) {
+  const user = await User.findOneAndDelete({ userId });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return user;
+};
+
+// delete a user from database by userId by using custom instance method
+
+userSchema.methods.updateUser = async function (
+  userId: number,
+  userData: TUser,
+) {
+  const user = await User.findOneAndUpdate(
+    { userId: userId },
+    { $set: userData },
+    { new: true, projection: { projection: 0 } },
+  );
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return user;
 };
 
 export const User = model<TUser, UserModel>('User', userSchema);

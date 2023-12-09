@@ -4,7 +4,7 @@ import UserValidationSchema from './user.validation';
 
 const createUser = async (req: Request, res: Response) => {
   try {
-    const { user: userData } = req.body;
+    const userData = req.body;
     const zodParseData = UserValidationSchema.parse(userData);
     const result = await UserServices.createUserIntoDB(zodParseData);
 
@@ -14,10 +14,14 @@ const createUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err: any) {
+    console.log(err);
     res.status(500).json({
       success: false,
       message: err.message,
-      error: err,
+      error: {
+        code: 500,
+        description: err.message,
+      },
     });
   }
 };
@@ -25,6 +29,7 @@ const createUser = async (req: Request, res: Response) => {
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getAllUsersFromDB();
+    console.log(result.length);
 
     res.status(200).json({
       success: true,
@@ -58,10 +63,9 @@ const getSingleUser = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: err.message,
-
       error: {
         code: 404,
-        description: 'User not found',
+        description: err.message,
       },
     });
   }
@@ -98,7 +102,7 @@ const deleteSingleUser = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: 'User deleted successfully!',
-      data: result,
+      data: null,
     });
   } catch (err: any) {
     res.status(500).json({
